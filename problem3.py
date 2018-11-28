@@ -1,7 +1,7 @@
 import numpy as np
 from random import randint
 
-
+# -----Create Environment-----
 # actions
 up = 0
 down = 1
@@ -40,13 +40,14 @@ def calculate_transition(current_state, robber_movement):
     police_new_position = np.array(current_state[2:3]) + np.array(police_movement)
     police_new_position = limit_coordinates(police_new_position)  # Limit the movement inside 4 by 4
     new_position = np.append(robber_new_position, police_new_position)
+    new_state = np.ravel_multi_index(new_position, (MazeX, MazeY, MazeX, MazeY))
     if robber_new_position[0] == police_new_position[0] and robber_new_position[1] == police_new_position[1]:
         reward = -10
     elif bank[tuple(robber_new_position)]:
         reward = 1
     else:
         reward = 0
-    return new_position, reward
+    return new_state, reward
 
 
 nS = MazeX*MazeY*MazeX*MazeY  # No of states in the state space
@@ -64,9 +65,20 @@ for s in range(nS):
     R[s][left] = calculate_transition(position, [-1, 0])
     R[s][right] = calculate_transition(position, [1, 0])
     R[s][stand_still] = calculate_transition(position, [0, 0])
-# print(R[s][right])
+# print(Position[1], R[1][right])
 
+# -----Q learning-----
+# parameters
+alpha = 0.5  # learning rate
 lamb = 0.8  # discount factor
-state_init = (0, 0, 3, 3)  # We always start from this state
+epsilon = 0.1
 
+state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
+Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
+print(max(Q[1]))
 
+iter = 200  # No of iterations, 10000000
+for i in range(iter):
+    # action =
+    new_state, reward = R[state][action]
+    Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
