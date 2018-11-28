@@ -69,16 +69,19 @@ for s in range(nS):
 
 # -----Q learning-----
 # parameters
-alpha = 0.5  # learning rate
 lamb = 0.8  # discount factor
 epsilon = 0.1
 
 state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
-print(max(Q[1]))
 
-iter = 200  # No of iterations, 10000000
+iter = 10000000  # No of iterations, 10000000
 for i in range(iter):
-    # action =
+    action = randint(0, 4)
     new_state, reward = R[state][action]
+    alpha = 1/pow(n, 2/3)
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
+    state = new_state
+
+print(Q)
+# -----SARSA-----
