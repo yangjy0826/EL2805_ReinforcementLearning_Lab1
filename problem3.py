@@ -74,14 +74,17 @@ epsilon = 0.1
 
 state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
+n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
 
 iter = 10000000  # No of iterations, 10000000
 for i in range(iter):
     action = randint(0, 4)
     new_state, reward = R[state][action]
-    alpha = 1/pow(n, 2/3)
+    alpha = 1/pow(n[state, action]+1, 2/3)
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
+    n[state, action] += 1
     state = new_state
 
 print(Q)
+print(n)
 # -----SARSA-----
