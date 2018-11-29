@@ -1,6 +1,8 @@
 import numpy as np
 from random import randint
-
+import os
+import matplotlib.pyplot as plt
+import pandas as pd
 # -----Create Environment-----
 # actions
 up = 0
@@ -74,25 +76,36 @@ lamb = 0.8  # discount factor
 state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
-V = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, 1))
+# V = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
+V =np.zeros(shape=(nA, 1))
 iter = 10000000  # No of iterations, 10000000
-Values = np.zeros(shape=(1,))
-f_handle = open('V.csv', 'wb')
+
+file_path=[None]*nA
+f_handle = [None]*nA
+for a in range(nA):
+    file_path[a] = 'Value'+str(a)+'.csv'
+    if os.path.exists(file_path[a]):
+        os.remove(file_path[a])
+    f_handle[a] = open(file_path[a], 'wb')
+
 for i in range(iter):
     action = randint(0, 4)
     new_state, reward = R[state][action]
     alpha = 1/pow(n[state, action]+1, 2/3)
-    V = np.max(Q, axis=1)
-
-    Values[0] = V[state]
-    np.savetxt(f_handle, Values, delimiter=',' ,fmt='%-.4f')
-
+    V = np.max(Q, axis=0).reshape((nA,1))
+    for a in range(nA):
+        np.savetxt(f_handle[a], V[a], delimiter=',' ,fmt='%-.2f')
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
     n[state, action] += 1
     state = new_state
-f_handle.close()
-print(Q)
-print(n)
+for a in range(nA):
+    f_handle[a].close()
+
+#file_path = "V.csv"
+#df = pd.read_csv(file_path)
+
+#print(Q)
+#print(n)
 '''
 # -----SARSA-----
 # parameters
