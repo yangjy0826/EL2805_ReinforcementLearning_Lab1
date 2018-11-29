@@ -25,8 +25,8 @@ def limit_coordinates(coord):  # Limit the movement inside 4 by 4
     return coord
 
 
-def calculate_transition(current_state, robber_movement):
-    robber_new_position = np.array(current_state[0:1]) + np.array(robber_movement)
+def calculate_transition(current_position, robber_movement):
+    robber_new_position = np.add(np.array(current_position[0:2]), np.array(robber_movement))
     robber_new_position = limit_coordinates(robber_new_position)  # Limit the movement inside 4 by 4
     i = randint(0, 3)
     if i == 0:
@@ -37,7 +37,7 @@ def calculate_transition(current_state, robber_movement):
         police_movement = [-1, 0]  # left
     else:
         police_movement = [1, 0]  # right
-    police_new_position = np.array(current_state[2:3]) + np.array(police_movement)
+    police_new_position = np.add(np.array(current_position[2:4]), np.array(police_movement))
     police_new_position = limit_coordinates(police_new_position)  # Limit the movement inside 4 by 4
     new_position = np.append(robber_new_position, police_new_position)
     new_state = np.ravel_multi_index(new_position, (MazeX, MazeY, MazeX, MazeY))
@@ -66,7 +66,7 @@ for s in range(nS):
     R[s][right] = calculate_transition(position, [1, 0])
     R[s][stand_still] = calculate_transition(position, [0, 0])
 # print(Position[1], R[1][right])
-'''
+
 # -----Q learning-----
 # parameters
 lamb = 0.8  # discount factor
@@ -74,12 +74,16 @@ lamb = 0.8  # discount factor
 state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
-
-iter = 100000  # No of iterations, 10000000
+V = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, 1))
+iter = 10000000  # No of iterations, 10000000
+Values = np.zeros(shape=(iter,))
 for i in range(iter):
     action = randint(0, 4)
     new_state, reward = R[state][action]
     alpha = 1/pow(n[state, action]+1, 2/3)
+    V = np.max(Q, axis=1)
+    if i==10000:
+        Values[i] = V[state]
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
     n[state, action] += 1
     state = new_state
@@ -104,7 +108,7 @@ def epsilon_greedy(state):
     return A
 
 
-iter = 100000  # No of iterations, 10000000
+iter = 10000000  # No of iterations, 10000000
 action_probs = epsilon_greedy(state)
 action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
 for i in range(iter):
@@ -117,3 +121,5 @@ for i in range(iter):
     state = new_state
     action = new_action
 print(Q)
+print(n)
+'''
