@@ -84,6 +84,7 @@ for i in range(iter):
     V = np.max(Q, axis=1)
     if i==10000:
         Values[i] = V[state]
+        print('done')
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
     n[state, action] += 1
     state = new_state
