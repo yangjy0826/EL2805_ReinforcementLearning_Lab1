@@ -76,19 +76,21 @@ Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
 V = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, 1))
 iter = 10000000  # No of iterations, 10000000
-Values = np.zeros(shape=(iter,))
+Values = np.zeros(shape=(1,))
+f_handle = open('V.csv', 'wb')
 for i in range(iter):
     action = randint(0, 4)
     new_state, reward = R[state][action]
     alpha = 1/pow(n[state, action]+1, 2/3)
     V = np.max(Q, axis=1)
-    if i==10000:
-        Values[i] = V[state]
-        print('done')
+
+    Values[0] = V[state]
+    np.savetxt(f_handle, Values, delimiter=',' ,fmt='%-.4f')
+
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
     n[state, action] += 1
     state = new_state
-
+f_handle.close()
 print(Q)
 print(n)
 '''
