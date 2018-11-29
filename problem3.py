@@ -66,17 +66,16 @@ for s in range(nS):
     R[s][right] = calculate_transition(position, [1, 0])
     R[s][stand_still] = calculate_transition(position, [0, 0])
 # print(Position[1], R[1][right])
-
+'''
 # -----Q learning-----
 # parameters
 lamb = 0.8  # discount factor
-epsilon = 0.1
 
 state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
 
-iter = 10000000  # No of iterations, 10000000
+iter = 100000  # No of iterations, 10000000
 for i in range(iter):
     action = randint(0, 4)
     new_state, reward = R[state][action]
@@ -87,4 +86,34 @@ for i in range(iter):
 
 print(Q)
 print(n)
+'''
 # -----SARSA-----
+# parameters
+lamb = 0.8  # discount factor
+epsilon = 0.1
+
+state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
+Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
+n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
+
+
+def epsilon_greedy(state):
+    A = np.ones(nA, dtype=float) * epsilon / nA
+    best_action = np.argmax(Q[state])
+    A[best_action] += (1.0 - epsilon)
+    return A
+
+
+iter = 100000  # No of iterations, 10000000
+action_probs = epsilon_greedy(state)
+action = np.random.choice(np.arange(len(action_probs)), p=action_probs)
+for i in range(iter):
+    new_state, reward = R[state][action]
+    alpha = 1/pow(n[state, action]+1, 2/3)
+    new_action_probs = epsilon_greedy(state)
+    new_action = np.random.choice(np.arange(len(new_action_probs)), p=new_action_probs)
+    Q[state, action] += alpha*(reward+lamb*Q[new_state][new_action]-Q[state, action])
+    n[state, action] += 1
+    state = new_state
+    action = new_action
+print(Q)
