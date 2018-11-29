@@ -68,7 +68,7 @@ for s in range(nS):
     R[s][right] = calculate_transition(position, [1, 0])
     R[s][stand_still] = calculate_transition(position, [0, 0])
 # print(Position[1], R[1][right])
-
+'''
 # -----Q learning-----
 # parameters
 lamb = 0.8  # discount factor
@@ -77,30 +77,32 @@ state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We a
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
 # V = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
-V =np.zeros(shape=(nA, 1))
-iter = 10000000 # No of iterations, 10000000
-
-file_path=[None]*nA
-f_handle = [None]*nA
-for a in range(nA):
-    file_path[a] = 'Value'+str(a)+'.csv'
-    if os.path.exists(file_path[a]):
-        os.remove(file_path[a])
-    f_handle[a] = open(file_path[a], 'wb')
-
+# plot_state_num = randint(0,255)
+len_plot_state_num = 3
+plot_state_num = np.random.choice(range(255), len_plot_state_num, replace=False)
+iter = 10000000  # No of iterations, 10000000
+file_path = [None]*len_plot_state_num
+f_handle = [None]*len_plot_state_num
+for num in range(len_plot_state_num):
+    file_path[num] = 'value_for_'+str(num)+'.csv'
+    f_handle[num] = open(file_path[num], 'wb')
+V =np.zeros(shape=(len_plot_state_num, 1))
 for i in range(iter):
     action = randint(0, 4)
     new_state, reward = R[state][action]
     alpha = 1/pow(n[state, action]+1, 2/3)
-    V = np.max(Q, axis=0).reshape((nA,1))
-    for a in range(nA):
-        np.savetxt(f_handle[a], V[a], delimiter=',' ,fmt='%-.2f')
+    for num in range(len_plot_state_num):
+        V[num] = np.max(Q[plot_state_num[num]])
+        np.savetxt(f_handle[num], V[num], delimiter=',', fmt='%-.2f')
+    #for a in range(nA):
+
     Q[state, action] += alpha*(reward+lamb*max(Q[new_state])-Q[state, action])
     n[state, action] += 1
     state = new_state
-for a in range(nA):
-    f_handle[a].close()
 
+# np.savetxt(f_handle, V, delimiter=',', fmt='%-.2f')
+for num in range(len_plot_state_num):
+    f_handle[num].close()
 #file_path = "V.csv"
 #df = pd.read_csv(file_path)
 
@@ -115,7 +117,14 @@ epsilon = 0.1
 state = np.ravel_multi_index((0, 0, 3, 3), (MazeX, MazeY, MazeX, MazeY))  # We always start from this state
 Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
-
+len_plot_state_num = 3
+plot_state_num = [26, 79, 128]
+file_path = [None]*len_plot_state_num
+f_handle = [None]*len_plot_state_num
+for num in range(len_plot_state_num):
+    file_path[num] = 'value_for_'+str(num)+'sarsa'+'.csv'
+    f_handle[num] = open(file_path[num], 'wb')
+V =np.zeros(shape=(len_plot_state_num, 1))
 
 def epsilon_greedy(state):
     A = np.ones(nA, dtype=float) * epsilon / nA
@@ -132,10 +141,15 @@ for i in range(iter):
     alpha = 1/pow(n[state, action]+1, 2/3)
     new_action_probs = epsilon_greedy(state)
     new_action = np.random.choice(np.arange(len(new_action_probs)), p=new_action_probs)
+
+    for num in range(len_plot_state_num):
+        V[num] = np.max(Q[plot_state_num[num]])
+        np.savetxt(f_handle[num], V[num], delimiter=',', fmt='%-.2f')
+
     Q[state, action] += alpha*(reward+lamb*Q[new_state][new_action]-Q[state, action])
     n[state, action] += 1
     state = new_state
     action = new_action
 print(Q)
 print(n)
-'''
+
