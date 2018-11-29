@@ -78,7 +78,7 @@ Q = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))  # Q table initialization
 n = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
 # V = np.zeros(shape=(MazeX*MazeY*MazeX*MazeY, nA))
 V =np.zeros(shape=(nA, 1))
-iter = 10000000  # No of iterations, 10000000
+iter = 10000000 # No of iterations, 10000000
 
 file_path=[None]*nA
 f_handle = [None]*nA
