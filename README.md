@@ -6,5 +6,5 @@ This repository includes 2 problems:
 # Problem 1: The Maze and the Random Minotaur
 
 # Problem 3: Bank Robbing (Reloaded)
-[problem3.py](https://github.com/yangjy0826/EL2805_ReinforcementLearning_Lab1/blob/master/problem3.py) is the Q learning and SARSA model for this problem. </br>
-[plot.py](https://github.com/yangjy0826/EL2805_ReinforcementLearning_Lab1/blob/master/plot.py) is the file for plotting result image.
+1) [problem3.py](https://github.com/yangjy0826/EL2805_ReinforcementLearning_Lab1/blob/master/problem3.py) is the Q learning and SARSA model for this problem. </br>
+2) [plot.py](https://github.com/yangjy0826/EL2805_ReinforcementLearning_Lab1/blob/master/plot.py) is the file for plotting result image.
